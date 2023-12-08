@@ -32,7 +32,7 @@ def Resample(input_signal, src_fs, tar_fs):
     audio_len = input_signal.shape[1]
     audio_time_max = 1.0 * (audio_len) / src_fs
     src_time = 1.0 * np.linspace(0, audio_len, audio_len) / src_fs
-    tar_time = 1.0 * np.linspace(0, np.int(audio_time_max * tar_fs), np.int(audio_time_max * tar_fs)) / tar_fs
+    tar_time = 1.0 * np.linspace(0, int(audio_time_max * tar_fs), int(audio_time_max * tar_fs)) / tar_fs
     for i in range(input_signal.shape[0]):
         if i == 0:
             output_signal = np.interp(tar_time, src_time, input_signal[i, :]).astype(dtype)
@@ -168,7 +168,7 @@ def run_12ECG_classifier(data, header_data, model):
     combined_label[combined_label < threshold_tmp] = 0
 
 
-    current_label = np.squeeze(combined_label.astype(np.int))
+    current_label = np.squeeze(combined_label.astype(int))
     current_score = np.squeeze(score)
 
     # Get the label

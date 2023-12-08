@@ -8,7 +8,7 @@ import pandas as pd
 
 #计算F1score
 def cal_Acc(y_true, y_pre, threshold=0.5, num_classes=9, beta=2, normal=False):
-    y_true = y_true.cpu().detach().numpy().astype(np.int)
+    y_true = y_true.cpu().detach().numpy().astype(int)
 
     y_label = np.zeros(y_true.shape)
     # Generate the one hot encoding labels
@@ -162,7 +162,7 @@ def load_labels(label_files, normal_class, equivalent_classes_collection):
     num_classes = len(classes)
 
     # Use one-hot encoding for labels.
-    labels = np.zeros((num_recordings, num_classes), dtype=np.bool)
+    labels = np.zeros((num_recordings, num_classes), dtype=bool)
     for i in range(num_recordings):
         dxs = tmp_labels[i]
         for dx in dxs:
@@ -234,7 +234,7 @@ def load_outputs(output_files, normal_class, equivalent_classes_collection):
     num_classes = len(classes)
 
     # Use one-hot encoding for binary outputs and the same order for scalar outputs.
-    binary_outputs = np.zeros((num_recordings, num_classes), dtype=np.bool)
+    binary_outputs = np.zeros((num_recordings, num_classes), dtype=bool)
     scalar_outputs = np.zeros((num_recordings, num_classes), dtype=np.float64)
     for i in range(num_recordings):
         dxs = tmp_labels[i]
@@ -284,12 +284,12 @@ def organize_labels_outputs(label_classes, output_classes, tmp_labels, tmp_binar
     num_recordings = len(tmp_labels)
 
     # Rearrange the columns of the labels and the outputs to be consistent with the order of the classes.
-    labels = np.zeros((num_recordings, num_classes), dtype=np.bool)
+    labels = np.zeros((num_recordings, num_classes), dtype=bool)
     for k, dx in enumerate(label_classes):
         j = classes.index(dx)
         labels[:, j] = tmp_labels[:, k]
 
-    binary_outputs = np.zeros((num_recordings, num_classes), dtype=np.bool)
+    binary_outputs = np.zeros((num_recordings, num_classes), dtype=bool)
     scalar_outputs = np.zeros((num_recordings, num_classes), dtype=np.float64)
     for k, dx in enumerate(output_classes):
         j = classes.index(dx)
