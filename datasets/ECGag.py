@@ -58,9 +58,10 @@ class ECG(object):
     inputchannel = 12
 
 
-    def __init__(self, data_dir, split='0'):
+    def __init__(self, data_dir, split='0', resample='butterworth'):
         self.data_dir = data_dir
         self.split = split
+        self.resample = resample
 
 
 
@@ -71,8 +72,8 @@ class ECG(object):
             train_pd = pd.read_csv(train_path)
             val_pd = pd.read_csv(val_path)
 
-            train_dataset = dataset(anno_pd=train_pd, transform=data_transforms['train'], data_dir=self.data_dir)
-            val_dataset = dataset(anno_pd=val_pd, transform=data_transforms['val'], data_dir=self.data_dir)
+            train_dataset = dataset(anno_pd=train_pd, transform=data_transforms['train'], data_dir=self.data_dir, resample=self.resample)
+            val_dataset = dataset(anno_pd=val_pd, transform=data_transforms['val'], data_dir=self.data_dir, resample=self.resample)
             return train_dataset, val_dataset
         else:
             train_path = './data_split/train_split' + self.split + '.csv'
@@ -80,8 +81,8 @@ class ECG(object):
             train_pd = pd.read_csv(train_path)
             val_pd = pd.read_csv(val_path)
 
-            train_dataset = dataset(anno_pd=train_pd, transform=data_transforms['train'], data_dir=self.data_dir)
-            val_dataset = dataset(anno_pd=val_pd, transform=data_transforms['val'], data_dir=self.data_dir)
+            train_dataset = dataset(anno_pd=train_pd, transform=data_transforms['train'], data_dir=self.data_dir, resample=self.resample)
+            val_dataset = dataset(anno_pd=val_pd, transform=data_transforms['val'], data_dir=self.data_dir, resample=self.resample)
             return train_dataset, val_dataset
 
 

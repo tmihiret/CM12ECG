@@ -1,6 +1,39 @@
 
 import numpy as np
+import scipy.signal as signal
 
+def LPF_Resample(input_signal, src_fs, tar_fs, filter_order=4):
+    """
+    Resamples a signal using Butterworth low-pass filter and zero-phase digital
+    filtering. If the input is a collection of signals, the signals are
+    resampled individually.
+    The resulting signal better approximates the original signal as compared
+    to simple linear interpolation.
+    Args:
+        input_signal (1D or 2D NumPy array): The input signal.
+        src_fs (float): The sampling frequency of the input signal.
+        tar_fs (float): The desired frequency to resample the signal to.
+    """
+    if src_fs == tar_fs:
+        return input_signal
+
+    if input_signal.ndim == 1:
+        nyquist_freq = tar_fs / 2
+        lpf = signal.butter(N=filter_order, Wn=nyquist_freq, btype='low', fs=src_fs, output='sos') # Low-pass filter
+        lps = signal.sosfiltfilt(lpf, input_signal) # Low-passed signal
+        rss_num_samples = int(np.round(input_signal.shape[0] / src_fs * tar_fs))
+        rss = signal.resample(lps, num=rss_num_samples) # Resampled signal
+        return rss
+    
+    elif input_signal.ndim == 2:
+        # Recurse on each signal
+        acc = []
+        for signal in input_signal:
+            acc.append(LPF_Resample(signal, src_fs, tar_fs, filter_order))
+        return np.stack(acc)
+
+    else:
+        raise ValueError('LPF_Resample only supports input signal with ndim <= 2')
 
 
 def Resample(input_signal, src_fs, tar_fs):

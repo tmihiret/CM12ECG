@@ -32,11 +32,48 @@ def Resample(input_signal, src_fs, tar_fs):
         output_signal = input_signal
     return output_signal
 
-def load_data(case, src_fs, tar_fs=257):
-    #case = case.replace('..', '.')
+
+def LPF_Resample(input_signal, src_fs, tar_fs, filter_order=4):
+    """
+    Resamples a signal using Butterworth low-pass filter and zero-phase digital
+    filtering. If the input is a collection of signals, the signals are
+    resampled individually.
+    The resulting signal better approximates the original signal as compared
+    to simple linear interpolation.
+    Args:
+        input_signal (1D or 2D NumPy array): The input signal.
+        src_fs (float): The sampling frequency of the input signal.
+        tar_fs (float): The desired frequency to resample the signal to.
+    """
+    if src_fs == tar_fs:
+        return input_signal
+    from scipy import signal
+    if input_signal.ndim == 1:
+        nyquist_freq = tar_fs / 2
+        lpf = signal.butter(N=filter_order, Wn=nyquist_freq, btype='low', fs=src_fs, output='sos') # Low-pass filter
+        lps = signal.sosfiltfilt(lpf, input_signal) # Low-passed signal
+        rss_num_samples = int(np.round(input_signal.shape[0] / src_fs * tar_fs))
+        rss = signal.resample(lps, num=rss_num_samples) # Resampled signal
+        return rss
+    
+    elif input_signal.ndim == 2:
+        # Recurse on each signal
+        acc = []
+        for signal in input_signal:
+            acc.append(LPF_Resample(signal, src_fs, tar_fs, filter_order))
+        return np.stack(acc)
+
+    else:
+        raise ValueError('LPF_Resample only supports input signal with ndim <= 2')
+
+
+def load_data(case, src_fs, tar_fs=257, resample='butterworth'):
     x = loadmat(case)
     data = np.asarray(x['val'], dtype=np.float64)
-    data = Resample(data, src_fs, tar_fs)
+    if resample=='butterworth':
+        data = LPF_Resample(data, src_fs, tar_fs)
+    else:
+        data = Resample(data, src_fs, tar_fs)
     return data
 
 def prepare_data(age, gender):
@@ -59,7 +96,7 @@ def prepare_data(age, gender):
 
 class dataset(Dataset):
 
-    def __init__(self, anno_pd, test=False, transform=None, data_dir=None, loader=load_data):
+    def __init__(self, anno_pd, test=False, transform=None, data_dir=None, loader=load_data, resample='butterworth'):
         self.test = test
         if self.test:
             self.data = anno_pd['filename'].tolist()
@@ -75,6 +112,7 @@ class dataset(Dataset):
         self.transforms = transform
         self.data_dir = data_dir
         self.loader = loader
+        self.resample = resample
 
 
     def __len__(self):
@@ -84,7 +122,7 @@ class dataset(Dataset):
         if self.test:
             img_path = self.data[item]
             fs = self.fs[item]
-            img = self.loader(self.data_dir + img_path, src_fs=fs)
+            img = self.loader(self.data_dir + img_path, src_fs=fs, resample=self.resample)
             img = self.transforms(img)
             return img, img_path
         else:
@@ -93,7 +131,7 @@ class dataset(Dataset):
             age = self.age[item]
             gender = self.gender[item]
             age_gender = prepare_data(age, gender)
-            img = self.loader(img_name, src_fs=fs)
+            img = self.loader(img_name, src_fs=fs, resample=self.resample)
             label = self.multi_labels[item]
             """
             for i in range(img.shape[1]):
