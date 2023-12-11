@@ -5,12 +5,12 @@ from train_12ECG_classifier import train_12ECG_classifier
 
 if __name__ == '__main__':
     # Parse arguments.
-    input_directory = sys.argv[1]
-    output_directory = sys.argv[2]
-    """
-    input_directory = '../Data'
-    output_directory = './Test_Codes'
-    """
+    # input_directory = sys.argv[1]
+    # output_directory = sys.argv[2]
+    
+    input_directory = './'
+    output_directory = './Ablation_Folder'
+    
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
 
