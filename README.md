@@ -1,11 +1,22 @@
-# Physionet2020model
+# Classification of Multi-label 12-Lead Electrocardiogram Readings Using Deep Neural Network
 
-This repository contains the Pytorch implementation of our model in Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020. The related paper was accepted by the CinC2020 and titled
-"[**Adaptive Lead Weighted ResNet Trained With Different Duration Signals for
-Classifying 12-lead ECGs**](https://physionetchallenges.github.io/2020/papers/112.pdf)" 
-by [Zhibin Zhao](https://zhaozhibin.github.io/). 
+This repository is forked from the work of [Zhibin Zhao](https://zhaozhibin.github.io/).
+   
 
-Our team, named Between_a_ROC_and_a_heart_place, came 2nd in the [**CinC/Physionet challenge88**](https://physionetchallenges.github.io/2020/)
+## Getting Started    
+1. Install the necessary libraries.
+This repo is tested with Ubuntu 22.04, PyTorch 2.0.1, Python3.6. Install package dependencies as follows:
+
+```
+pip install -r requirements.txt    
+```
+
+2. Download the PhysioNet Challenge 2020 database.   
 
 
-Other detailed information about how to use this code can be referred to [**python-classifier-2020**](https://github.com/physionetchallenges/python-classifier-2020)
+3. Prepare dataset
+Run [stratification_split_single.py] # make sure you add the dataset root directory 
+
+4. Run training
+Run [train_model.py] or [a-e] scripts
+  * Make sure you have provided the right parameter as an argument.
