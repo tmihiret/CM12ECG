@@ -12,11 +12,12 @@ pip install -r requirements.txt
 ```
 
 2. Download the PhysioNet Challenge 2020 database.   
-
+```
+wget -r -N -c -np https://physionet.org/files/challenge-2020/1.0.2/
+```
 
 3. Prepare dataset
 Run [stratification_split_single.py] # make sure you add the dataset root directory 
 
 4. Run training
-Run [train_model.py] or [a-e] scripts
-  * Make sure you have provided the right parameter as an argument.
+Run [train_model.py] or [a-e] scripts # make sure you have provided the right parameter as an argument.
