@@ -49,7 +49,7 @@ class train_utils(object):
         Dataset = getattr(datasets, args.data_name)
         self.datasets = {}
         self.datasets['train'], self.datasets['val'] = Dataset(args.data_dir, args.split).data_preprare()
-        self.dataloaders = {x: torch.utils.data.DataLoader(self.datasets[x], batch_size=args.batch_size,
+        self.dataloaders = {x: torch.utils.data.DataLoader(self.datasets[x], batch_size=(args.batch_size if x == 'train' else 1),
                                                            shuffle=(True if x == 'train' else False),
                                                            num_workers=args.num_workers,
                                                            pin_memory=(True if self.device == 'cuda' else False),
@@ -150,7 +150,6 @@ class train_utils(object):
                 epoch_length = 0
                 batch_length = 0
                 batch_acc = 0
-
                 # Set model to train mode or test mode
                 if phase == 'train':
                     self.model.train()
@@ -232,18 +231,3 @@ class train_utils(object):
 
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

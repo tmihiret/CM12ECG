@@ -5,13 +5,13 @@ import logging
 import os
 import time
 import warnings
-
+from torchsummary import summary
 import torch
 from torch import nn
 from torch import optim
 import numpy as np
 import math
-
+import sys
 import models
 import datasets
 from utils.save import Save_Tool
@@ -59,7 +59,7 @@ class train_utils(object):
         # Load the datasets
         Dataset = getattr(datasets, args.data_name)
         self.datasets = {}
-        self.datasets['train'], self.datasets['val'] = Dataset(args.data_dir, args.split).data_preprare()
+        self.datasets['train'], self.datasets['val'] = Dataset(args.data_dir, args.split, args.resample).data_preprare()
         self.dataloaders = {
             x: torch.utils.data.DataLoader(self.datasets[x], batch_size=(args.batch_size if x == 'train' else 1),
                                            shuffle=(True if x == 'train' else False),
@@ -71,9 +71,7 @@ class train_utils(object):
         # Define the model
         self.num_classes = Dataset.num_classes
         self.model = getattr(models, args.model_name)(in_channel=Dataset.inputchannel, out_channel=Dataset.num_classes)
-        # self.model = getattr(models, args.model_name)()
-        # self.model.fc = torch.nn.Linear(self.model.fc.in_features, Dataset.num_classes)
-        # parameter_list = self.model.parameter_list(args.lr)
+
 
         if args.layer_num_last != 0:
             set_freeze_by_id(self.model, args.layer_num_last)
@@ -269,7 +267,7 @@ class train_utils(object):
                         logging.info("save best model epoch {}, CM: {:.4f}".
                                      format(epoch, challenge_metric))
                         torch.save(model_state_dic,
-                                   os.path.join(self.save_dir, '{}-{:.4f}-split{}.pth'.format(epoch, best_acc, args.split)))
+                                   os.path.join(self.save_dir, '{}-{:.4f}-model{}.pth'.format(epoch, best_acc, args.model_name)))
 
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()

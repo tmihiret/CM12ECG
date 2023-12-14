@@ -143,13 +143,10 @@ def prepare_datacsv(data_directory):
         file_pd = pd.read_csv(file)
         file_pd['filename'] = file_pd['filename'].apply(lambda x: os.path.join(data_directory, os.path.basename(x)))
         file_pd.to_csv(file, sep=',', index=False)
-        
-            
-    
     
 
 
 if __name__ == '__main__':
     # define dir
-    data_directory = '../Data/'
+    data_directory = '/home/ubuntu/CM12ECG/physionet.org/' # put the root directory of the dataset
     read_and_split_data(data_directory)
